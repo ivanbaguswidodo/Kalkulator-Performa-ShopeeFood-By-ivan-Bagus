@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Bootstrap Icon -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"
+    />
+    <title>Kalkulator Performa ShopeeFood Driver</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        max-width: 420px;
+        margin: auto;
+        background: #f5f5f5;
+      }
+      h2 {
+        color: #e67e22;
+        text-align: center;
+      }
+      label {
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+      }
+      input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        margin: 4px 0 10px;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 10px 15px;
+        background: #e67e22;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #d35400;
+      }
+      .result {
+        margin-top: 20px;
+        background: #fff;
+        border: 1px solid #ccc;
+        padding: 15px;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Kalkulator Performa Driver</h2>
+
+    <label for="finishedOrder">Orderan Selesai Hari Ini:</label>
+    <input type="number" id="finishedOrder" placeholder="Contoh: 10" />
+
+    <label for="skip">Skip yang Sudah Dilakukan:</label>
+    <input type="number" id="skip" placeholder="Contoh: 2" />
+
+    <label for="cancel">Cancel yang Sudah Dilakukan:</label>
+    <input type="number" id="cancel" placeholder="Contoh: 1" />
+
+    <button onclick="hitungPerforma()">Hitung Performa</button>
+
+    <div class="result" id="output" style="display: none">
+      <p>Performa Driver: <span id="acceptanceRate"></span>%</p>
+      <p><strong>Status:</strong> <span id="status"></span></p>
+      <p>Sisa Skip Aman: <span id="sisaSkip"></span></p>
+      <p>Sisa Cancel Aman: <span id="sisaCancel"></span></p>
+    </div>
+
+    <script>
+      function hitungPerforma() {
+        const finishedOrder =
+          parseInt(document.getElementById("finishedOrder").value) || 0;
+        const currentSkip =
+          parseInt(document.getElementById("skip").value) || 0;
+        const currentCancel =
+          parseInt(document.getElementById("cancel").value) || 0;
+
+        const totalOrder = finishedOrder + currentSkip + currentCancel;
+        const acceptanceRate =
+          totalOrder > 0
+            ? ((finishedOrder / totalOrder) * 100).toFixed(2)
+            : "0.00";
+
+        const ar = parseFloat(acceptanceRate);
+        let status;
+        if (ar >= 90) {
+          status = "✅ Aman (Performa Baik)";
+        } else if (ar >= 75) {
+          status = "⚠️ Hati-hati! Ingat batas aman 75%";
+        } else {
+          status = "❌ Berisiko (Performa Rendah)";
+        }
+
+        // Hitung kombinasi skip dan cancel maksimal agar tetap >= 75%
+        let maxSisaSkip = 0;
+        let maxSisaCancel = 0;
+        let maxTotalExtra = 0;
+
+        for (let extraSkip = 0; extraSkip <= 50; extraSkip++) {
+          for (let extraCancel = 0; extraCancel <= 50; extraCancel++) {
+            const newTotal =
+              finishedOrder +
+              currentSkip +
+              currentCancel +
+              extraSkip +
+              extraCancel;
+            const newRate = (finishedOrder / newTotal) * 100;
+            const totalExtra = extraSkip + extraCancel;
+
+            if (newRate >= 75 && totalExtra >= maxTotalExtra) {
+              maxTotalExtra = totalExtra;
+              maxSisaSkip = extraSkip;
+              maxSisaCancel = extraCancel;
+            }
+          }
+        }
+
+        document.getElementById("acceptanceRate").innerText = acceptanceRate;
+        document.getElementById("status").innerText = status;
+        document.getElementById("sisaSkip").innerText = maxSisaSkip;
+        document.getElementById("sisaCancel").innerText = maxSisaCancel;
+        document.getElementById("output").style.display = "block";
+      }
+    </script>
+    <!-- Footer -->
+    <footer class="footer">
+      <p>
+        Ikuti Instagram Saya <i class="bi bi-instagram"> </i
+        ><a
+          href="https://www.instagram.com/ivan_bagus_/?hl=id"
+          class="text-white fw-bold"
+          >Ivan Bagus Widodo</a
+        >
+      </p>
+    </footer>
+    <!-- akhir footer -->
+  </body>
+</html>
